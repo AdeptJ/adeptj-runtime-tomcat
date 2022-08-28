@@ -1,22 +1,27 @@
 package com.adeptj.runtime.tomcat;
 
 import com.adeptj.runtime.kernel.AbstractServer;
+import com.adeptj.runtime.kernel.SciInfo;
+import com.adeptj.runtime.kernel.ServerName;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 
-import javax.servlet.ServletContainerInitializer;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
-import java.util.Set;
 
 public class TomcatServer extends AbstractServer {
 
     private Tomcat tomcat;
 
     @Override
-    public void start(String[] args, ServletContainerInitializer sci, Class<?>... classes) {
+    public ServerName getName() {
+        return ServerName.TOMCAT;
+    }
+
+    @Override
+    public void start(String[] args, SciInfo sciInfo) {
         this.tomcat = new Tomcat();
         this.tomcat.setBaseDir("temp");
         Connector connector = this.tomcat.getConnector();
@@ -26,7 +31,7 @@ public class TomcatServer extends AbstractServer {
         String docBase = new File(".").getAbsolutePath();
 
         Context context = tomcat.addContext(contextPath, docBase);
-        context.addServletContainerInitializer(sci, Set.of(classes));
+        context.addServletContainerInitializer(sciInfo.getSciInstance(), sciInfo.getHandleTypes());
         Tomcat.addServlet(context, "GreetingServlet", new GreetingServlet());
         context.addServletMappingDecoded("/greet", "GreetingServlet");
 
