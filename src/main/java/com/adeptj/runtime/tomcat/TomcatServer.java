@@ -7,6 +7,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.Http11NioProtocol;
 
 import javax.servlet.http.HttpServlet;
 import java.io.File;
@@ -28,6 +30,10 @@ public class TomcatServer extends AbstractServer {
         this.tomcat.setBaseDir("temp");
         Connector connector = this.tomcat.getConnector();
         connector.setPort(8080);
+        ProtocolHandler ph = connector.getProtocolHandler();
+        if (ph instanceof Http11NioProtocol) {
+            ((Http11NioProtocol) ph).setRelaxedPathChars("[]|");
+        }
         String contextPath = "";
         String docBase = new File(".").getAbsolutePath();
         this.context = tomcat.addContext(contextPath, docBase);
