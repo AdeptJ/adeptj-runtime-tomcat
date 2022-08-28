@@ -15,6 +15,8 @@ public class TomcatServer extends AbstractServer {
 
     private Tomcat tomcat;
 
+    private Context context;
+
     @Override
     public ServerName getName() {
         return ServerName.TOMCAT;
@@ -26,23 +28,18 @@ public class TomcatServer extends AbstractServer {
         this.tomcat.setBaseDir("temp");
         Connector connector = this.tomcat.getConnector();
         connector.setPort(8080);
-
         String contextPath = "";
         String docBase = new File(".").getAbsolutePath();
-
-        Context context = tomcat.addContext(contextPath, docBase);
-        context.addServletContainerInitializer(sciInfo.getSciInstance(), sciInfo.getHandleTypes());
-        Tomcat.addServlet(context, "GreetingServlet", new GreetingServlet());
-        context.addServletMappingDecoded("/greet", "GreetingServlet");
-
+        this.context = tomcat.addContext(contextPath, docBase);
+        this.context.addServletContainerInitializer(sciInfo.getSciInstance(), sciInfo.getHandleTypes());
+        Tomcat.addServlet(this.context, "GreetingServlet", new GreetingServlet());
+        this.context.addServletMappingDecoded("/greet", "GreetingServlet");
         try {
             this.tomcat.start();
         } catch (LifecycleException e) {
             throw new RuntimeException(e);
         }
         this.doStart(args, "AdeptJ Tomcat Terminator");
-        this.tomcat.getServer().await();
-
     }
 
     @Override
@@ -55,7 +52,18 @@ public class TomcatServer extends AbstractServer {
     }
 
     @Override
-    public void registerServlets(HttpServlet... servlets) {
+    public void postStart() {
+        this.tomcat.getServer().await();
+    }
 
+    @Override
+    public void registerServlets(HttpServlet... servlets) {
+        int count = 0;
+        for (HttpServlet servlet : servlets) {
+            String servletName = servlet.getClass().getSimpleName();
+            Tomcat.addServlet(context, servletName, servlet);
+            this.context.addServletMappingDecoded("/servlet" + count, servletName);
+            count++;
+        }
     }
 }
