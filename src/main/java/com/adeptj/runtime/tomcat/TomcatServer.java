@@ -2,7 +2,7 @@ package com.adeptj.runtime.tomcat;
 
 import com.adeptj.runtime.kernel.AbstractServer;
 import com.adeptj.runtime.kernel.SciInfo;
-import com.adeptj.runtime.kernel.ServerName;
+import com.adeptj.runtime.kernel.ServerRuntime;
 import com.adeptj.runtime.kernel.ServletDeployment;
 import com.adeptj.runtime.kernel.ServletInfo;
 import org.apache.catalina.Context;
@@ -21,8 +21,8 @@ public class TomcatServer extends AbstractServer {
     private Context context;
 
     @Override
-    public ServerName getName() {
-        return ServerName.TOMCAT;
+    public ServerRuntime getRuntime() {
+        return ServerRuntime.TOMCAT;
     }
 
     @Override
