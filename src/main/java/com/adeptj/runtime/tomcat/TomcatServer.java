@@ -7,10 +7,15 @@ import com.adeptj.runtime.kernel.ServletDeployment;
 import com.adeptj.runtime.kernel.ServletInfo;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.tomcat.util.descriptor.web.LoginConfig;
+import org.apache.tomcat.util.descriptor.web.SecurityCollection;
+import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 
 import java.io.File;
 
@@ -41,6 +46,28 @@ public class TomcatServer extends AbstractServer {
         SciInfo sciInfo = deployment.getSciInfo();
         this.context.addServletContainerInitializer(sciInfo.getSciInstance(), sciInfo.getHandleTypes());
         this.registerServlets(deployment.getServletInfos());
+        LoginConfig loginConfig = new LoginConfig();
+        loginConfig.setAuthMethod("FORM");
+        loginConfig.setLoginPage("/admin/login");
+        loginConfig.setErrorPage("/admin/login");
+        loginConfig.setRealmName("AdeptJ Realm");
+        this.context.setLoginConfig(loginConfig);
+        if (this.context instanceof StandardContext) {
+            SecurityConstraint constraint = new SecurityConstraint();
+            constraint.addAuthRole("OSGiAdmin");
+            SecurityCollection collection = new SecurityCollection();
+            collection.addPattern("/system/console/*");
+            constraint.addCollection(collection);
+            StandardContext stdCtx = (StandardContext) this.context;
+            stdCtx.addConstraint(constraint);
+            FormAuthenticator valve = new FormAuthenticator();
+            valve.setLandingPage("/admin/login");
+            stdCtx.addValve(valve);
+        }
+        InMemoryRealm realm = new InMemoryRealm();
+        realm.setCredentialHandler(new CredentialHandler());
+        this.context.setRealm(realm);
+        Tomcat.addDefaultMimeTypeMappings(this.context);
         try {
             this.tomcat.start();
         } catch (LifecycleException e) {
