@@ -6,7 +6,7 @@ import org.apache.catalina.realm.RealmBase;
 import java.security.Principal;
 import java.util.List;
 
-public class InMemoryRealm extends RealmBase {
+public class TypesafeConfigBasedRealm extends RealmBase {
 
     @Override
     protected String getPassword(String username) {

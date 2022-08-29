@@ -1,6 +1,8 @@
 package com.adeptj.runtime.tomcat;
 
-public class CredentialHandler implements org.apache.catalina.CredentialHandler {
+import org.apache.catalina.CredentialHandler;
+
+public class TypesafeConfigBasedCredentialHandler implements CredentialHandler {
 
     @Override
     public boolean matches(String inputCredentials, String storedCredentials) {
