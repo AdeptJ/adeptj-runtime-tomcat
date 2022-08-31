@@ -50,6 +50,7 @@ public class TomcatServer extends AbstractServer {
         try {
             this.tomcat.start();
         } catch (LifecycleException e) {
+            this.logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
         // Needed by Tomcat's DefaultServlet for serving static content from adeptj-runtime jar.
@@ -58,6 +59,11 @@ public class TomcatServer extends AbstractServer {
 
     @Override
     public void stop() {
+        try {
+            super.preStop();
+        } catch (Exception e) {
+            this.logger.error(e.getMessage(), e);
+        }
         try {
             this.tomcat.stop();
         } catch (LifecycleException e) {
