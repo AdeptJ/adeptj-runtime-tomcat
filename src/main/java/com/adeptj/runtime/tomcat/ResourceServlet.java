@@ -25,37 +25,40 @@ public class ResourceServlet extends DefaultServlet {
         this.handle(req, resp, resource, req.getPathInfo());
     }
 
-    // Below section is borrowed (with much appreciation) from Felix HttpService ResourceServlet :)
+    @Override
+    protected String getRelativePath(HttpServletRequest request) {
+        return super.getRelativePath(request);
+    }
+// Below section is borrowed (with much appreciation) from Apache Felix HttpService ResourceServlet :)
 
-    private void handle(final HttpServletRequest req,
-                        final HttpServletResponse res, final URL url, final String resName) throws IOException {
-        final String contentType = this.getServletContext().getMimeType(resName);
+    private void handle(HttpServletRequest req, HttpServletResponse res, URL url, String resName) throws IOException {
+        String contentType = this.getServletContext().getMimeType(resName);
         if (contentType != null) {
             res.setContentType(contentType);
         }
-        final long lastModified = getLastModified(url);
+        long lastModified = this.getLastModified(url);
         if (lastModified != 0) {
             res.setDateHeader("Last-Modified", lastModified);
         }
         if (!resourceModified(lastModified, req.getDateHeader("If-Modified-Since"))) {
             res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
         } else {
-            copyResource(url, res);
+            this.copyResource(url, res);
         }
     }
 
-    private long getLastModified(final URL url) {
+    private long getLastModified(URL url) {
         long lastModified = 0;
         try {
-            final URLConnection conn = url.openConnection();
+            URLConnection conn = url.openConnection();
             lastModified = conn.getLastModified();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             // Do nothing
         }
         if (lastModified == 0) {
-            final String filepath = url.getPath();
+            String filepath = url.getPath();
             if (filepath != null) {
-                final File f = new File(filepath);
+                File f = new File(filepath);
                 if (f.exists()) {
                     lastModified = f.lastModified();
                 }
@@ -71,7 +74,7 @@ public class ResourceServlet extends DefaultServlet {
         return resTimestamp == 0 || modSince == -1 || resTimestamp > modSince;
     }
 
-    private void copyResource(final URL url, final HttpServletResponse res) throws IOException {
+    private void copyResource(URL url, HttpServletResponse res) throws IOException {
         URLConnection conn;
         OutputStream os = null;
         InputStream is = null;
@@ -79,7 +82,7 @@ public class ResourceServlet extends DefaultServlet {
             conn = url.openConnection();
             is = conn.getInputStream();
             os = res.getOutputStream();
-            int len = getContentLength(conn);
+            int len = this.getContentLength(conn);
             if (len >= 0) {
                 res.setContentLength(len);
             }
@@ -98,7 +101,7 @@ public class ResourceServlet extends DefaultServlet {
         }
     }
 
-    private int getContentLength(final URLConnection conn) {
+    private int getContentLength(URLConnection conn) {
         int length;
         length = conn.getContentLength();
         if (length < 0) {

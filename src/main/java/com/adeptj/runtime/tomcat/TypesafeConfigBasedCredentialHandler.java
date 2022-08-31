@@ -6,7 +6,7 @@ public class TypesafeConfigBasedCredentialHandler implements CredentialHandler {
 
     @Override
     public boolean matches(String inputCredentials, String storedCredentials) {
-        return true;
+        return inputCredentials.equals("admin");
     }
 
     @Override

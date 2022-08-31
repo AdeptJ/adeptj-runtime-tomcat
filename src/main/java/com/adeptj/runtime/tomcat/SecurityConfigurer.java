@@ -49,7 +49,8 @@ public class SecurityConfigurer {
         context.addConstraint(constraint);
         // Form Auth
         FormAuthenticator valve = new FormAuthenticator();
-        valve.setLandingPage("/admin/login");
+        valve.setLandingPage("/");
+        valve.setCharacterEncoding("UTF-8");
         context.addValve(valve);
         // Realm and CredentialHandler
         TypesafeConfigBasedRealm realm = new TypesafeConfigBasedRealm();
