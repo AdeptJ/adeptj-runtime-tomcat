@@ -1,6 +1,7 @@
 package com.adeptj.runtime.tomcat;
 
 import com.adeptj.runtime.kernel.AbstractServer;
+import com.adeptj.runtime.kernel.FilterInfo;
 import com.adeptj.runtime.kernel.SciInfo;
 import com.adeptj.runtime.kernel.ServerRuntime;
 import com.adeptj.runtime.kernel.ServletDeployment;
@@ -15,6 +16,7 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.Http11NioProtocol;
 
 import java.io.File;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class TomcatServer extends AbstractServer {
@@ -73,6 +75,16 @@ public class TomcatServer extends AbstractServer {
     protected void doRegisterServlet(ServletInfo info) {
         Tomcat.addServlet(this.context, info.getServletName(), info.getServletInstance());
         this.context.addServletMappingDecoded(info.getPath(), info.getServletName());
+    }
+
+    @Override
+    protected void doRegisterFilter(FilterInfo info) {
+
+    }
+
+    @Override
+    public void registerErrorPages(List<Integer> errorCodes) {
+
     }
 
     private void addJarResourceSet(Context context) {

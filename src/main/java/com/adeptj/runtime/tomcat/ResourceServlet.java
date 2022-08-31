@@ -22,7 +22,7 @@ public class ResourceServlet extends DefaultServlet {
         }
         // Fallback
         if (!resp.isCommitted()) {
-            new FallbackResourceServlet().doGet(req, resp);
+            new FallbackResourceHandler().handle(req, resp);
         }
     }
 }

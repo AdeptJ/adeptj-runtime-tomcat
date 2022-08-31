@@ -1,6 +1,5 @@
 package com.adeptj.runtime.tomcat;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -12,22 +11,21 @@ import java.net.URLConnection;
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
-public class FallbackResourceServlet extends HttpServlet {
+public class FallbackResourceHandler {
 
-    @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         URL resource = this.getClass().getResource("/WEB-INF" + req.getRequestURI());
         if (resource == null) {
             resp.sendError(SC_NOT_FOUND);
             return;
         }
-        this.handle(req, resp, resource, req.getPathInfo());
+        this.doHandle(req, resp, resource, req.getPathInfo());
     }
 
     // Below section is borrowed (with much appreciation) from Apache Felix HttpService ResourceServlet :)
 
-    private void handle(HttpServletRequest req, HttpServletResponse res, URL url, String resName) throws IOException {
-        String contentType = this.getServletContext().getMimeType(resName);
+    private void doHandle(HttpServletRequest req, HttpServletResponse res, URL url, String resName) throws IOException {
+        String contentType = req.getServletContext().getMimeType(resName);
         if (contentType != null) {
             res.setContentType(contentType);
         }
