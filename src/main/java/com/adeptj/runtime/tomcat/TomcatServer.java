@@ -93,6 +93,11 @@ public class TomcatServer extends AbstractServer {
 
     }
 
+    @Override
+    public void addServletContextAttribute(String name, Object value) {
+        this.context.getServletContext().setAttribute(name, value);
+    }
+
     private void addJarResourceSet(Context context) {
         String docBase = context.getDocBase();
         File[] jars = new File(docBase.substring(0, docBase.length() - 1) + "/lib").listFiles();
