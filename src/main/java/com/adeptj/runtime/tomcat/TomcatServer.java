@@ -11,6 +11,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.startup.VersionLoggerListener;
 import org.apache.catalina.webresources.JarResourceSet;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.Http11NioProtocol;
@@ -33,9 +34,10 @@ public class TomcatServer extends AbstractServer {
     @Override
     public void start(String[] args, ServletDeployment deployment) {
         this.tomcat = new Tomcat();
+        this.tomcat.setPort(8080);
         this.tomcat.setBaseDir("tomcat-deployment");
+        this.tomcat.getServer().addLifecycleListener(new VersionLoggerListener());
         Connector connector = this.tomcat.getConnector();
-        connector.setPort(8080);
         ProtocolHandler ph = connector.getProtocolHandler();
         if (ph instanceof Http11NioProtocol) {
             ((Http11NioProtocol) ph).setRelaxedPathChars("[]|");
