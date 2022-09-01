@@ -44,7 +44,7 @@ public class TomcatServer extends AbstractServer {
         SciInfo sciInfo = deployment.getSciInfo();
         this.context.addServletContainerInitializer(sciInfo.getSciInstance(), sciInfo.getHandleTypes());
         this.registerServlets(deployment.getServletInfos());
-        new SecurityConfigurer().configure(this.context);
+        new SecurityConfigurer().configure(this.context, this.getUserManager());
         new GeneralConfigurer().configure(this.context);
         Tomcat.addDefaultMimeTypeMappings(this.context);
         try {

@@ -1,5 +1,6 @@
 package com.adeptj.runtime.tomcat;
 
+import com.adeptj.runtime.kernel.UserManager;
 import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.core.StandardContext;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
@@ -8,7 +9,7 @@ import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 
 public class SecurityConfigurer {
 
-    public void configure(StandardContext context) {
+    public void configure(StandardContext context, UserManager userManager) {
         // SecurityConstraint
         SecurityConstraint constraint = new SecurityConstraint();
         constraint.addAuthRole("OSGiAdmin");
@@ -29,8 +30,8 @@ public class SecurityConfigurer {
         valve.setCharacterEncoding("UTF-8");
         context.addValve(valve);
         // Realm and CredentialHandler
-        TypesafeConfigBasedRealm realm = new TypesafeConfigBasedRealm();
-        realm.setCredentialHandler(new TypesafeConfigBasedCredentialHandler());
+        MVStoreRealm realm = new MVStoreRealm(userManager);
+        realm.setCredentialHandler(new MVStoreCredentialHandler(userManager));
         context.setRealm(realm);
     }
 }
