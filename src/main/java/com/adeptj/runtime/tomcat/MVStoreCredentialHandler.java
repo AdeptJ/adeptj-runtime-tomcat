@@ -16,8 +16,14 @@ public class MVStoreCredentialHandler implements CredentialHandler {
         return this.userManager.matchPassword(inputCredentials, storedCredentials);
     }
 
+    /**
+     * This is just called to waste a bit of time as not to reveal that the user does not exist.
+     *
+     * @param inputCredentials User provided credentials
+     * @return encoded version of passed credentials.
+     */
     @Override
     public String mutate(String inputCredentials) {
-        return inputCredentials;
+        return this.userManager.encodePassword(inputCredentials);
     }
 }
