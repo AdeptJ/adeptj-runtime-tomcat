@@ -1,11 +1,13 @@
 package com.adeptj.runtime.tomcat;
 
 import com.adeptj.runtime.kernel.AbstractServer;
+import com.adeptj.runtime.kernel.ConfigProvider;
 import com.adeptj.runtime.kernel.FilterInfo;
 import com.adeptj.runtime.kernel.SciInfo;
 import com.adeptj.runtime.kernel.ServerRuntime;
 import com.adeptj.runtime.kernel.ServletDeployment;
 import com.adeptj.runtime.kernel.ServletInfo;
+import com.typesafe.config.Config;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
@@ -33,8 +35,9 @@ public class TomcatServer extends AbstractServer {
 
     @Override
     public void start(String[] args, ServletDeployment deployment) {
+        Config config = ConfigProvider.getInstance().getReferenceConfig();
         this.tomcat = new Tomcat();
-        this.tomcat.setPort(8080);
+        this.tomcat.setPort(this.resolvePort(config));
         this.tomcat.setBaseDir("tomcat-deployment");
         this.tomcat.getServer().addLifecycleListener(new VersionLoggerListener());
         Connector connector = this.tomcat.getConnector();
